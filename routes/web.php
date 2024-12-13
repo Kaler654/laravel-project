@@ -16,7 +16,8 @@ use App\Http\Controllers\ArticleController;
 |
 */
 
-Route::get('/articles', [ArticleController::class, "index"]);
+// Route::get('/articles', [ArticleController::class, "index"]);
+Route::resource('/articles', ArticleController::class);
 
 
 Route::get('/signup', [AuthController::class, 'signup']);
