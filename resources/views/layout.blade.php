@@ -35,12 +35,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        @can('article')
         <li class="nav-item">
           <a class="nav-link" href="/articles">Статьи</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/articles/create">Создать статью</a>
         </li>
+        @endcan
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/about">O нас</a>
         </li>
