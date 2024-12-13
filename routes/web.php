@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
-
+use App\Http\Controllers\CommentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +18,11 @@ use App\Http\Controllers\ArticleController;
 
 // Route::get('/articles', [ArticleController::class, "index"]);
 Route::resource('/articles', ArticleController::class);
+
+Route::post('/comment',[CommentController::class, 'store'])->name('comment.store');
+Route::get('/comment/{id}/edit', [CommentController::class, 'edit']);
+Route::post('/comment/{comment}/update', [CommentController::class, 'update']);
+Route::get('/comment/{comment}/delete', [CommentController::class, 'destroy']);
 
 
 Route::get('/signup', [AuthController::class, 'signup']);
