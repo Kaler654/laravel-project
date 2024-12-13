@@ -20,7 +20,8 @@ class ArticleController extends Controller
     {
     
         $articles = Article::latest()->paginate(5);
-        return view('articles/index', ['articles'=>$articles]);
+        // return view('articles/index', ['articles'=>$articles]);
+        return response()->json($articles, 201);
     }
 
     /**
@@ -29,7 +30,8 @@ class ArticleController extends Controller
     public function create()
     {
         $this->authorize('create', [self::class]);
-        return view('articles/create');
+        // return view('articles/create');
+        return response()->json($article, 201);
     }
 
     /**
@@ -40,7 +42,8 @@ class ArticleController extends Controller
         $request->validate([
             'datePublic'=>'required',
             'title'=>'required',
-            'desc'=>'required'
+            'desc'=>'required',
+            'shortDesc'=>'required',
         ]);
 
         $article = new Article;
@@ -50,7 +53,8 @@ class ArticleController extends Controller
         $article->shortDesc = $request->shortDesc;
         $result = $article->save();
         if ($result) VeryLongJob::dispatch($article);
-        return redirect(route('articles.index'));
+        // return redirect(route('articles.index'));
+        return response()->json($result, 201);
     }
 
     /**
@@ -59,7 +63,8 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         $comments = Comment::where('article_id',$article->id)->get();
-        return view('articles/show', ['article'=>$article, 'comments'=>$comments]);
+        // return view('articles/show', ['article'=>$article, 'comments'=>$comments]);
+        return response()->json($article, 201);
     }
 
     /**
@@ -67,7 +72,8 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        return view('articles/edit', ['article'=>$article]);
+        // return view('articles/edit', ['article'=>$article]);
+        return response()->json($article, 201);
     }
 
     /**
@@ -85,8 +91,9 @@ class ArticleController extends Controller
         $article->title = $request->title;
         $article->desc = $request->desc;
         $article->shortDesc = $request->shortDesc;
-        $article->save();
-        return redirect(route('articles.show', ['article'=>$article->id]));
+        $result = $article->save();
+        // return redirect(route('articles.show', ['article'=>$article->id]));
+        return response()->json($result, 201);
 
     }
 
@@ -97,7 +104,8 @@ class ArticleController extends Controller
     {
 
         $article->comments()->delete();
-        $article->delete();
-        return redirect()->route('articles.index');
+        
+        // return redirect()->route('articles.index');
+        return response()->json($article->delete(), 201);
     }
 }

@@ -25,13 +25,18 @@ class AuthController extends Controller
             'email'=>$request->email,
             'password'=>Hash::make($request->password)
         ]);
-        $user->createToken('MyAppToken')->plainTextToken;
-        $user->save();
-        return redirect()->route('login');
+        $token = $user->createToken('MyAppToken')->plainTextToken;
+        // $user->save();
+        $response = [
+            'user'=>$user,
+            'token'=>$token
+        ];
+        return response()->json($response, 201);
+        // return redirect()->route('login');
     }
 
     public function login(){
-        return view('auth.login');
+        // return view('auth.login');
     }
 
     public function authenticate(Request $request)
@@ -46,21 +51,30 @@ class AuthController extends Controller
             'password'=>request('password')
         ];
 
-        if(Auth::attempt($credentials))
+        if(!Auth::attempt($credentials))
         {
-            $request->session()->regenerate();
-            return redirect('/');
+            return response('Bad login', 401);
         }
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+
+        $user = User::where('email', request('email'))->first();
+        $token = $user->createToken('MyAppToken')->plainTextToken;
+        $response = [
+            'user'=>$user,
+            'token'=>$token
+        ];
+        return response()->json($response, 201);
+
+        // return back()->withErrors([
+        //     'email' => 'The provided credentials do not match our records.',
+        // ]);
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
+        return response(['Message'=>'Log out'], 201);
+        // $request->session()->invalidate();
+        // $request->session()->regenerateToken();
+        // return redirect('/');
     }
 }
