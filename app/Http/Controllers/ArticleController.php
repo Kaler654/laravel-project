@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ArticleMail;
 
+use App\Jobs\VeryLongJob;
+
 class ArticleController extends Controller
 {
     /**
@@ -47,7 +49,7 @@ class ArticleController extends Controller
         $article->desc = $request->desc;
         $article->shortDesc = $request->shortDesc;
         $result = $article->save();
-        if ($result) Mail::send(new ArticleMail($article));
+        if ($result) VeryLongJob::dispatch($article);
         return redirect(route('articles.index'));
     }
 
