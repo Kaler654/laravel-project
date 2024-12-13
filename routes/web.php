@@ -15,9 +15,13 @@ use App\Http\Controllers\CommentController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/signup', [AuthController::class, 'signup']);
+Route::post('/registr', [AuthController::class, 'registr']);
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/authenticate', [AuthController::class, 'authenticate']);
+Route::get('/logout', [AuthController::class, 'logout']);
 
-// Route::get('/articles', [ArticleController::class, "index"]);
-Route::resource('/articles', ArticleController::class);
+Route::resource('/articles', ArticleController::class)->middleware('auth:sanctum');
 
 Route::post('/comment',[CommentController::class, 'store'])->name('comment.store');
 Route::get('/comment/{id}/edit', [CommentController::class, 'edit']);
@@ -25,8 +29,7 @@ Route::post('/comment/{comment}/update', [CommentController::class, 'update']);
 Route::get('/comment/{comment}/delete', [CommentController::class, 'destroy']);
 
 
-Route::get('/signup', [AuthController::class, 'signup']);
-Route::post('/login', [AuthController::class, 'signin']);
+
 
 Route::get('/', [MainController::class, 'index']);
 Route::get('/galery/{full_image}', [MainController::class, 'show']);

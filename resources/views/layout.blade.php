@@ -48,8 +48,13 @@
           <a class="nav-link" href="/contacts">Контакты</a>
         </li>
       </ul>
+      @guest
       <a class="btn btn-outline-success mr-3" href="/signup">Регистрация</a>
       <a class="btn btn-outline-success mr-3" href="/login">Авторизация</a>
+      @endguest
+      @auth
+      <a class="btn btn-outline-success mr-3" href="/logout">Выйти</a>
+      @endauth
     </div>
   </div>
 </nav>
