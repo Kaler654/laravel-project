@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,9 @@ use App\Http\Controllers\MainController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/signup', [AuthController::class, 'signup']);
+Route::post('/login', [AuthController::class, 'signin']);
 
 Route::get('/', [MainController::class, 'index']);
 Route::get('/galery/{full_image}', [MainController::class, 'show']);

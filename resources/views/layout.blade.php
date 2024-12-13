@@ -29,7 +29,8 @@
           <a class="nav-link" href="/contacts">Контакты</a>
         </li>
       </ul>
-        <button class="btn btn-outline-success mr-3" type="submit">Search</button>
+      <a class="btn btn-outline-success mr-3" href="/signup">Регистрация</a>
+      <a class="btn btn-outline-success mr-3" href="/login">Авторизация</a>
     </div>
   </div>
 </nav>
