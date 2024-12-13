@@ -37,17 +37,19 @@ class ArticleControllerPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Article $article): bool
+    public function update(User $user, Article $article)
     {
-        //
+        return ($user->role_id == 1) ?
+            Response::allow() :
+            Response::deny('You don`t moderator');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Article $article): bool
+    public function delete(User $user, Article $article)
     {
-        //
+        return $user->role_id == 1;
     }
 
     /**

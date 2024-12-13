@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ArticleMail;
 
 class ArticleController extends Controller
 {
@@ -43,7 +46,8 @@ class ArticleController extends Controller
         $article->title = $request->title;
         $article->desc = $request->desc;
         $article->shortDesc = $request->shortDesc;
-        $article->save();
+        $result = $article->save();
+        if ($result) Mail::send(new ArticleMail($article));
         return redirect(route('articles.index'));
     }
 
@@ -89,6 +93,7 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+
         $article->comments()->delete();
         $article->delete();
         return redirect()->route('articles.index');
