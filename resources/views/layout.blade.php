@@ -1,33 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>News</title>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+        <title>Laravel</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <style>
-    body {
-        font-family: 'Nunito', sans-serif;
-    }
-    .pagintaion__container {
-        display: flex;
-        
-    }
-
-    .hidden {
-        display: none;
-    }
-  </style>
-</head>
-<body class="d-flex flex-column min-vh-100">
-<header>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <!-- Styles -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="antialiased">
+    <header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">Navbar</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,40 +21,54 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/articles">Статьи</a>
+      <li class="nav-item">
+          <a class="nav-link @active('article')" aria-current="page" href="/article">Articles</a>
+      </li>
+      @can('create')
+      <li class="nav-item">
+          <a class="nav-link @active('article/create')" aria-current="page" href="/article/create">Create article</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link @active('comment/index')" aria-current="page" href="/comment/index">All comments</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link @active('about')" aria-current="page" href="/about">О нас</a>
+    </li>
+      @endcan
+        @auth
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Notifications {{auth()->user()->unreadNotifications->count()}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            @foreach(auth()->user()->unreadNotifications as $notification)
+              <li><a class="dropdown-item" href="{{route('article.show', ['article'=>$notification->data['article']['id'], 'notify'=>$notification->id])}}">{{$notification->data['article']['name']}}: {{$notification->data['comment_name']}}</a></li>
+            @endforeach
+          </ul>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/articles/create">Создать статью</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/about">O нас</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/contacts">Контакты</a>
-        </li>
+        @endauth
       </ul>
       @guest
-      <a class="btn btn-outline-success mr-3" href="/signup">Регистрация</a>
-      <a class="btn btn-outline-success mr-3" href="/login">Авторизация</a>
+      <a href="/auth/signup" class="btn btn-outline-success me-3">SignUp</a>
+      <a href="/auth/login" class="btn btn-outline-success me-3">SignIn</a>
       @endguest
       @auth
-      <a class="btn btn-outline-success mr-3" href="/logout">Выйти</a>
+      <a href="/auth/logout" class="btn btn-outline-success">Logout</a>
       @endauth
+
     </div>
   </div>
 </nav>
-</header>
-<main class="flex-grow-1">
-    <div class="container">
-        @yield('content')
-    </div>
-   
-</main>
-<footer class="footer bg-light text-center py-3">
-    <div class="footer__container">
-        <h2>Михайлов Егор 231-323</h2>
-    </div>
-</footer>
-</body>
+    </header>
+    <main>
+      <div class="container mt-3">
+        <div id="app">
+        </div>
+          @yield('content')
+      </div>
+    </main>
+    <footer>
+      <h2 class="container mt-3">Михайлов Егор 231-323</h2>
+    </footer>
+    </body>
 </html>

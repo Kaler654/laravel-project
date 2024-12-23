@@ -1,5 +1,23 @@
 @extends('layout')
 @section('content')
+
+
+@if ($errors->any())
+  <div class="alert-danger">
+     <ul>
+      @foreach($errors->all() as $error)
+        <li>{{$error}}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
+
+@if(session('status'))
+  <div class="alert alert-danger">
+      {{ session('status') }}
+  </div>
+@endif
+
 <form action="/comment/{{ $comment->id }}/update" method="POST">
   @csrf
   <div class="mb-3">

@@ -1,4 +1,5 @@
 @extends('layout')
 @section('content')
-    <img src="{{URL::asset('/images/'.$image)}}" alt="">
+    <p>{{$name}}</p>
+    <img src="{{$img}}" class="img-thumbnail" alt="">
 @endsection

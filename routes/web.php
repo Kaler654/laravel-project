@@ -5,6 +5,7 @@ use App\Http\Controllers\MainController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,35 +16,49 @@ use App\Http\Controllers\CommentController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/signup', [AuthController::class, 'signup']);
-Route::post('/registr', [AuthController::class, 'registr']);
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/authenticate', [AuthController::class, 'authenticate']);
-Route::get('/logout', [AuthController::class, 'logout']);
 
-Route::resource('/articles', ArticleController::class)->middleware('auth:sanctum');
+//Authenticate
+Route::get('/auth/signup', [AuthController::class, 'signup']);
+Route::post('/auth/registr', [AuthController::class, 'registr']);
+Route::get('/auth/login', [AuthController::class, 'login'])->name('login');
+Route::post('/auth/authenticate', [AuthController::class, 'authenticate']);
+Route::get('/auth/logout', [AuthController::class, 'logout']);
 
-Route::post('/comment',[CommentController::class, 'store'])->name('comment.store');
-Route::get('/comment/{id}/edit', [CommentController::class, 'edit']);
-Route::post('/comment/{comment}/update', [CommentController::class, 'update']);
-Route::get('/comment/{comment}/delete', [CommentController::class, 'destroy']);
+//Article
+Route::resource('/article', ArticleController::class)->middleware('auth:sanctum');
+Route::get('/article/{article}/', [ArticleController::class, 'show'])->name('article.show')->middleware('saveclick');
 
-
+//Comment
+Route::controller(CommentController::class)->prefix('/comment')->middleware('auth:sanctum')->group(function(){
+    Route::post('','store');
+    Route::get('/{id}/edit', 'edit');
+    Route::post('/{comment}/update', 'update');
+    Route::get('/{comment}/delete', 'delete');
+    Route::get('/index', 'index')->name('comment.index');
+    Route::get('/{comment}/accept', 'accept');
+    Route::get('/{comment}/reject', 'reject');
+});
 
 
 Route::get('/', [MainController::class, 'index']);
-Route::get('/galery/{full_image}', [MainController::class, 'show']);
-
-Route::get('/about', function () {
-    return view('main/about');
+Route::get('galery/{img}/{name}', function($img, $name){
+    return view('main.galery', ['img'=>$img, 'name'=>$name]);
 });
 
-Route::get('/contacts', function () {
+Route::get('/about', function(){
+    return view('main.about');
+})->name('about');
+
+Route::get('/contacts', function(){
     $data = [
-        "name" => "Polytech",
-        "address" => "B.Semenovskaya",
-        "email" => "@mospolytech.ru"
+        "city"=>"Moscow",
+        "street"=>"Semenovskaya",
+        "house"=>38
     ];
 
-    return view('main/contact', ['data'=>$data]);
+    return view('main.contact', ['data'=>$data]);
 });
+
+// Route::get('/', function () {
+//     return view('layout');
+// });

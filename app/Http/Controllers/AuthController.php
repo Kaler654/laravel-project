@@ -3,78 +3,65 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
     public function signup(){
-        return view('auth/signup');
+        return view('auth.signup');
     }
 
     public function registr(Request $request){
         $request->validate([
             'name'=>'required',
             'email'=>'required|unique:\App\Models\User',
-            'password'=>'required|min:6'
+            'password'=>'required|min:6|max:10'
         ]);
-
-        $user = User::create([
+        $response=[
             'name'=>$request->name,
-            'email'=>$request->email,
-            'password'=>Hash::make($request->password)
-        ]);
-        $token = $user->createToken('MyAppToken')->plainTextToken;
-        // $user->save();
-        $response = [
-            'user'=>$user,
-            'token'=>$token
-        ];
-        return response()->json($response, 201);
-        // return redirect()->route('login');
-    }
-
-    public function login(){
-        // return view('auth.login');
-    }
-
-    public function authenticate(Request $request)
-    {
-        $request->validate([
-            'email'=>'required|email',
-            'password'=>'required|min:6'
-        ]);
-
-        $credentials = [
             'email'=>request('email'),
             'password'=>request('password')
         ];
-
-        if(!Auth::attempt($credentials))
-        {
-            return response('Bad login', 401);
-        }
-
-        $user = User::where('email', request('email'))->first();
-        $token = $user->createToken('MyAppToken')->plainTextToken;
-        $response = [
-            'user'=>$user,
-            'token'=>$token
-        ];
-        return response()->json($response, 201);
-
-        // return back()->withErrors([
-        //     'email' => 'The provided credentials do not match our records.',
-        // ]);
+        // return response()->json($response);
+        $user = User::create([
+            'name'=>$request->name,
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+            'role'=>'reader',
+        ]);
+        $user->remember_token = $user->createToken('MyAppToken')->plainTextToken;
+        $user->save();
+        return redirect()->route('login');
     }
 
-    public function logout(Request $request)
+    public function login(){
+        return view('auth.login');
+    }
+
+    public function authenticate(Request $request): RedirectResponse
+    {
+        $credentials = $request->validate([
+            'email'=>'required|email',
+            'password'=>'required|min:6|max:10'
+        ]); 
+        if(Auth::attempt($credentials, $request->remember))
+        {
+            $request->session()->regenerate();
+            return redirect()->intended('/article');
+        }
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
-        return response(['Message'=>'Log out'], 201);
-        // $request->session()->invalidate();
-        // $request->session()->regenerateToken();
-        // return redirect('/');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }
